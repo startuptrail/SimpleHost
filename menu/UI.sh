@@ -25,14 +25,18 @@ line() { printf '%s\n' "${D}─────────────────�
 pause() { read -r -p $'\nPress Enter to return...' _ || true; }
 
 get_cpu() {
-    local u n s idle wa irq sirq steal total1 idle1 total2 idle2
-    read -r _ u n s idle wa irq sirq steal _ < /proc/stat 2>/dev/null || { printf 'N/A'; return; }
-    total1=$((u+n+s+idle+wa+irq+sirq+steal)); idle1=$((idle+wa))
-    sleep 0.12
-    read -r _ u n s idle wa irq sirq steal _ < /proc/stat 2>/dev/null || { printf 'N/A'; return; }
-    total2=$((u+n+s+idle+wa+irq+sirq+steal)); idle2=$((idle+wa))
-    local dt=$((total2-total1)) di=$((idle2-idle1))
-    (( dt > 0 )) && printf '%s%%' "$(((dt-di)*100/dt))" || printf 'N/A'
+    local line user nice system idle iowait irq softirq steal total
+    if ! IFS= read -r line < /proc/stat 2>/dev/null; then
+        printf 'N/A'
+        return
+    fi
+    read -r _ user nice system idle iowait irq softirq steal _ <<< "$line"
+    total=$((user + nice + system + idle + iowait + irq + softirq + steal))
+    if (( total <= 0 )); then
+        printf 'N/A'
+        return
+    fi
+    printf '%s' "$((100 * (total - idle - iowait) / total))%"
 }
 get_metrics() {
     HOST="$(hostname 2>/dev/null || printf unknown)"
@@ -43,7 +47,7 @@ get_metrics() {
     RAM_DETAIL="$(free -h 2>/dev/null | awk '/^Mem:/ {printf "%s / %s",$3,$2}' 2>/dev/null || true)"
     [[ -n "$RAM" ]] || RAM="N/A"
     [[ -n "${RAM_DETAIL:-}" ]] && RAM="$RAM ($RAM_DETAIL)"
-    DISK="$(df -hP / 2>/dev/null | awk 'NR==2 {printf "%s used of %s (%s)",$3,$2,$5}' || printf N/A)"
+    DISK="$(df -hP "$HOME" 2>/dev/null | awk 'NR==2 {printf "%s used of %s (%s)",$3,$2,$5}' || printf N/A)"
     IPS="$(hostname -I 2>/dev/null | awk '{$1=$1; print}' || printf N/A)"
 }
 
