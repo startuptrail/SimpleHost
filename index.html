@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>SimpleHost — Cloud Control Center</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b1020; color: #edf2ff; font: 16px/1.6 system-ui,sans-serif; }
+    main { max-width: 850px; margin: 70px auto; padding: 24px; }
+    .tag { color: #73e0bd; font-weight: 700; }
+    h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1.1; margin: 12px 0; }
+    p { color: #a8b4ca; }
+    section { background: #121a2e; border: 1px solid #26324b; border-radius: 16px; padding: 24px; margin-top: 24px; }
+    a { color: #73e0bd; }
+    pre { overflow-wrap: anywhere; white-space: pre-wrap; background: #080d19; padding: 14px; border-radius: 8px; }
+    button { background: #73e0bd; border: 0; border-radius: 8px; padding: 11px 16px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="tag">BASH TOOLKIT · VPS MANAGEMENT</span>
+    <h1>SimpleHost</h1>
+    <p>Your starting point for VPS and Pterodactyl management tools.</p>
+    <section>
+      <h2>Get the installer</h2>
+      <p>Download the script, inspect it, and run it in a compatible Linux terminal. This website does not execute shell scripts.</p>
+      <pre id="cmd">curl -fsSL https://run.simplehost.qzz.io/install.sh -o simplehost-install.sh</pre>
+      <button id="copy">Copy download command</button>
+      <p><a href="/install.sh">Download install.sh</a> · <a href="https://github.com/startuptrail/SimpleHost">View GitHub repository</a></p>
+      <p>Before running the installer, review it and check the project's requirements.</p>
+    </section>
+  </main>
+  <script>
+    document.getElementById('copy').addEventListener('click', async () => {
+      const text = document.getElementById('cmd').textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        document.getElementById('copy').textContent = 'Copied';
+      } catch {
+        document.getElementById('copy').textContent = 'Select and copy the command above';
+      }
+    });
+  </script>
+</body>
+</html>
